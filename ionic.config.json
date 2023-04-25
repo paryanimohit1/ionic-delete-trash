@@ -1,0 +1,7 @@
+{
+  "name": "delete-trash",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
