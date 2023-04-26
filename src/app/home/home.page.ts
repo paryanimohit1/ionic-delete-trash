@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Filesystem, Directory, FileInfo } from '@capacitor/filesystem';
 
 @Component({
   selector: 'app-home',
@@ -23,6 +23,8 @@ export class HomePage {
     https://ourcodeworld.com/articles/read/28/how-to-delete-file-with-cordova
     https://github.com/apache/cordova-plugin-file
     https://forum.ionicframework.com/t/delete-image-from-gallery/26433
+
+    ionic build && ionic cap copy && ionic cap sync && ionic cap open android
     */
 
 
@@ -49,8 +51,15 @@ export class HomePage {
       path: ''
      });
 
-     this.folderContent = folderContent.files.map(file=>({name: file}));
-     this.text += '\n length ' + this.folderContent.length;
+     this.folderContent = folderContent.files.map(file=>({name: file.name}));
+     this.text += '\n ExternalStorage length ' + this.folderContent.length;
+
+     const folderContent2 = await Filesystem.readdir({
+       path: 'file:///storage/emulated/0'
+      });
+
+      this.folderContent = [...this.folderContent, folderContent2.files.map(file=>({name: file.name}))];
+      this.text += '\n file:///storage/emulated/0 length ' + this.folderContent.length;
   }
 
 }
