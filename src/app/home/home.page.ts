@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 @Component({
   selector: 'app-home',
@@ -8,10 +9,13 @@ import { Component } from '@angular/core';
 export class HomePage {
 
   text = '';
+  folderContent:any[] = [];
 
   constructor() {
     var path = "file:///storage/emulated/0";
     var filename = "myfile.txt";
+    this.text = Directory.External;
+    this.loadDocuments();
 
     /*
     https://devdactic.com/capacitor-file-explorer-ionic
@@ -37,6 +41,16 @@ export class HomePage {
                   });
         });
     }); */
+  }
+
+  async loadDocuments() {
+    const folderContent = await Filesystem.readdir({
+      directory: Directory.ExternalStorage,
+      path: ''
+     });
+
+     this.folderContent = folderContent.files.map(file=>({name: file}));
+     this.text += '\n length ' + this.folderContent.length;
   }
 
 }

@@ -15,6 +15,7 @@
 
   <div id="container"  style="height: 80%">
     <ion-button color="medium">Delete Trash</ion-button>
-    <p>{{ text }}</p>
+    <p>Text: {{ text }}</p>
+    <p *ngFor="let f in folderContent">{{ f.name }}</p>
   </div>
 </ion-content>
