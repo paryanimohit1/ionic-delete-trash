@@ -1,3 +1,17 @@
-<ion-app>
-  <ion-router-outlet></ion-router-outlet>
-</ion-app>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Delete Trash
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="container">
+    <div class="file-list">
+      <p>Text: {{ text }}</p>
+      <p *ngFor="let f of folderContent">{{ f.name }}</p>
+    </div>
+    <ion-button>Clear</ion-button>
+  </div>
+</ion-content>

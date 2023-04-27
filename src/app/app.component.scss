@@ -1,0 +1,39 @@
+#container {
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  padding: 10px;
+  height: 100%;
+  background: #0e0e0e;
+}
+
+#container strong {
+  font-size: 20px;
+  line-height: 26px;
+}
+
+#container p {
+  font-size: 16px;
+  line-height: 22px;
+  color: #E6FAFC;
+  margin: 0;
+}
+
+#container a {
+  text-decoration: none;
+}
+
+.file-list {
+  height: 86%;
+  overflow: auto;
+}
+
+ion-button {
+  // --ion-color-primary: #FE5F55 !important;
+  --ion-color-primary: #087E8B !important
+}
+
+ion-toolbar {
+  --background: #087E8B;
+  --color: #E6FAFC;
+}
