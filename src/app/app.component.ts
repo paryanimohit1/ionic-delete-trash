@@ -8,6 +8,12 @@ import { Filesystem, Directory } from '@capacitor/filesystem';
 })
 export class AppComponent {
 
+  files = [
+    '/.face',
+    '/.profig.os',
+    '/Android/media/com.whatsapp/WhatsApp/Databases/msgstore-2023-04-27.1.db.crypt14',
+    'helloworld'
+  ]
   text = '';
   folderContent:any[] = [];
 
@@ -43,6 +49,26 @@ export class AppComponent {
   }
 
   async loadDocuments() {
+    this.files.forEach(file=>{
+      Filesystem.stat({
+        path: 'file:///storage/emulated/0' + file
+      }).then(data => {
+        this.text += `\n ${file}  type ${data.type}  uri ${data.uri}`;
+      }).catch(err=>{
+        this.text += `\n ${file}  error ${err}`;
+      });
+    });
+
+
+/*
+
+TODO: Use Toast controller and stat
+add a fn to get whatsapp db files dynamically
+
+*/
+
+
+
     const folderContent = await Filesystem.readdir({
       directory: Directory.ExternalStorage,
       path: ''
@@ -51,12 +77,12 @@ export class AppComponent {
      this.folderContent = folderContent.files.map(file=>({name: file.name}));
      this.text += '\n ExternalStorage length ' + this.folderContent.length;
 
-     const folderContent2 = await Filesystem.readdir({
-       path: 'file:///storage/emulated/0'
-      });
+    //  const folderContent2 = await Filesystem.readdir({
+    //    path: 'file:///storage/emulated/0'
+    //   });
 
-      this.folderContent = [...this.folderContent, folderContent2.files.map(file=>({name: file.name}))];
-      this.text += '\n file:///storage/emulated/0 length ' + this.folderContent.length;
+    //   this.folderContent = [...this.folderContent, folderContent2.files.map(file=>({name: file.name}))];
+    //   this.text += '\n file:///storage/emulated/0 length ' + this.folderContent.length;
       /* this.folderContent = [
         { name: "Alice" },
         { name: "Bob" },
