@@ -8,10 +8,12 @@
 
 <ion-content>
   <div id="container">
-    <div class="file-list">
-      <p>Text: {{ text }}</p>
-      <p *ngFor="let f of folderContent">{{ f }}</p>
+    <div class="error-list-container">
+      <p *ngFor="let error of errorText" class="error-text">{{ error }}</p>
     </div>
-    <ion-button>Clear</ion-button>
+    <div class="file-list-container">
+      <p *ngFor="let file of identifiedFiles" class="file-list-text">{{ file }}</p>
+    </div>
+    <ion-button (click)="clearClicked()">Clear</ion-button>
   </div>
 </ion-content>

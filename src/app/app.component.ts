@@ -14,14 +14,15 @@ const WHATSAPP_BASE_FOLDERS = [
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  files = [
+  dataToBeCleared: any[] = [];
+  allTrashFilesList = [
     '/.face',
     '/.profig.os',
     // '/Databases/msgstore-2023-04-27.1.db.crypt14',
     'helloworld',
   ];
-  text = '';
-  folderContent: any[] = [];
+  errorText: string[] = [];
+  identifiedFiles: any[] = [];
 
   constructor(private toastController: ToastController) {
     this.loadDocuments();
@@ -35,7 +36,7 @@ export class AppComponent {
 
       ionic build && ionic cap copy && ionic cap sync && ionic cap open android
       */
-          /* window.resolveLocalFileSystemURL(path, function(dir) {
+    /* window.resolveLocalFileSystemURL(path, function(dir) {
       dir.getFile(filename, {create:false}, function(fileEntry) {
       fileEntry.remove(function(){
       this.text = 'removed';
@@ -52,21 +53,26 @@ export class AppComponent {
     */
   }
 
+  clearClicked() {
+    this.presentToast(`TBC - ${this.dataToBeCleared.length}`);
+  }
+
   async loadDocuments() {
     let whatsappDBFiles = await this.getWhatsAppDBFilesList();
-
-    this.files = [...this.files, ...whatsappDBFiles.map((file) => file.uri)];
-    this.folderContent.push(...this.files);
-    this.files.forEach((file) => {
+    this.allTrashFilesList = [
+      ...this.allTrashFilesList,
+      ...whatsappDBFiles.map((file) => file.uri),
+    ];
+    this.allTrashFilesList.forEach((file) => {
       Filesystem.stat({
         path: BASE_URI + file,
       })
         .then((data) => {
-          this.text += `<br>${file} - ${data.type}`;
-          this.folderContent.push(data.uri);
+          this.identifiedFiles.push(file);
+          this.dataToBeCleared.push(data);
         })
         .catch((err) => {
-          this.text += `<br>${file} - ${err}`;
+          this.errorText.push(` ~ ${file} - ${err}`);
         });
     });
 
@@ -129,7 +135,10 @@ export class AppComponent {
         ]; */
   }
 
-  async presentToast(message: string, position: 'top' | 'middle' | 'bottom' = 'middle') {
+  async presentToast(
+    message: string,
+    position: 'top' | 'middle' | 'bottom' = 'middle'
+  ) {
     const toast = await this.toastController.create({
       message: message,
       duration: 2000,
@@ -140,30 +149,35 @@ export class AppComponent {
   }
 
   async getWhatsAppDBFilesList() {
-    let order = 0;
     var waDbFiles: { name: string; uri: string }[] = [];
     const currentYear = new Date().getFullYear();
     // WHATSAPP_BASE_FOLDERS.forEach(async (whatsappBasePath) => {
-      for(let i = 0; i< WHATSAPP_BASE_FOLDERS.length; i++){
-        let whatsappBasePath = WHATSAPP_BASE_FOLDERS[i];
+    for (let i = 0; i < WHATSAPP_BASE_FOLDERS.length; i++) {
+      let whatsappBasePath = WHATSAPP_BASE_FOLDERS[i];
       const whatsappFolderContent = await Filesystem.readdir({
         path: BASE_URI + whatsappBasePath + '/Databases',
-      }).then(data => data).catch(err=>{
-        this.text += whatsappBasePath + ' ' + err
-        return null;
-      });
+      })
+        .then((data) => data)
+        .catch((err) => null);
       if (whatsappFolderContent?.files.length) {
-        var mappedList = whatsappFolderContent.files.map((file) => {
-          return {
+        whatsappFolderContent.files.forEach((file) => {
+          if (file.name.startsWith(`msgstore-${currentYear}-`)) {
+            waDbFiles.push({
               name: file.name,
-              uri: whatsappBasePath + '/Databases/' + file.name
-            }
-          }).filter((file) => file.name.startsWith(`msgstore-${currentYear}-`));
-          waDbFiles.push(...mappedList)//[ ...waDbFiles, ...mappedList ];
-          this.presentToast((order++) + 'dbcount' + whatsappFolderContent.files.length + ' - map ' + mappedList.length + ' - finaldbfilesarrPUSH ' + waDbFiles.length, 'bottom');
+              uri: whatsappBasePath + '/Databases/' + file.name,
+            });
+          }
+        });
+        this.presentToast(
+          'dbcount' +
+            whatsappFolderContent.files.length +
+            ' - filteredDBCount ' +
+            waDbFiles.length,
+          'bottom'
+        );
       }
-    };
-    this.presentToast((order++) + 'wadbfiles' + waDbFiles.length, 'top')
+    }
+    this.presentToast('wadbfiles' + waDbFiles.length, 'top');
     return waDbFiles;
   }
 }
